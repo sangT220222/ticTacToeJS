@@ -1,13 +1,13 @@
-const game_board = (() => {
+const get_game_board = (() => {
   let game_board = [
     ['','',''],
     ['','',''],
     ['','','']
   ];
 
-  const rows = 3;
-  const columns = rows;
-  const board = [];
+  // const rows = 3;
+  // const columns = rows;
+  // const board = [];
 
   // for (let i = 0; i < rows; i++) {
   //   board[i] = [];
@@ -16,12 +16,13 @@ const game_board = (() => {
   //   }
   // }
 
-  const get_game_board = () => game_board; //getting game board
-  return game_board[0][2];
+  // const get_game_board_array = () => game_board; //getting game board
+
+  return game_board;
 })
 
 
-const check_winner = () =>{
+const check_winner = (() =>{
   for(let row = 0; row < 3 ; row ++){
     if(game_board[row][0] === symbol && game_board[row][1] === symbol && game_board[row][2] === symbol){
       return true //this if loop checks if the symbol is placed 3 times in a row horizontally, the it increments hence checks all the rows
@@ -44,7 +45,16 @@ const check_winner = () =>{
   }
 
   return false;
-}
+})
+
+const check_draw = (() => {
+  const game_board_array = get_game_board();
+  const flat_board = game_board_array.flat();
+  if (!flat_board.includes('')){ //if the game board does not include any empty string
+    return true;
+  }
+  return false
+})
 
 
 //BoardCell represents a square on the gameboard
@@ -100,5 +110,7 @@ const BoardCell = () =>{
 
 // }
 
-console.log(game_board());
+// console.log(game_board());
 // game_logic();
+get_game_board();
+console.log(check_draw())
