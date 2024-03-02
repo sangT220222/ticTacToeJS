@@ -1,116 +1,131 @@
-const get_game_board = (() => {
+const game_board_controller = (() => {
   let game_board = [
     ['','',''],
     ['','',''],
     ['','','']
   ];
-
-  // const rows = 3;
-  // const columns = rows;
-  // const board = [];
-
-  // for (let i = 0; i < rows; i++) {
-  //   board[i] = [];
-  //   for (let j = 0; j < columns; j++) {
-  //     board[i].push(Cell());
-  //   }
-  // }
-
-  // const get_game_board_array = () => game_board; //getting game board
-
   return game_board;
 })
 
 
-const check_winner = (() =>{
+const create_player = ((name, symbol) => {
+  return {
+      name: name,
+      symbol: symbol
+  }
+})
+
+
+const check_winner = ((board, symbol) =>{
   for(let row = 0; row < 3 ; row ++){
-    if(game_board[row][0] === symbol && game_board[row][1] === symbol && game_board[row][2] === symbol){
+    if(board[row][0] === symbol && board[row][1] === symbol && board[row][2] === symbol){
       return true //this if loop checks if the symbol is placed 3 times in a row horizontally, the it increments hence checks all the rows
     }
   }
 
   for(let column = 0; column < 3 ; column ++){
-    if(game_board[0][column] === symbol && game_board[1][column] === symbol && game_board[2][column] === symbol){
+    if(board[0][column] === symbol && board[1][column] === symbol && board[2][column] === symbol){
       return true //this if loop checks if the symbol is placed 3 times in a row vertically, the it increments hence checks all the columns
     }
   }
 
   //checks for diagonal win
-  if (game_board[0][0] === symbol && game_board[1][1] === symbol && game_board[2][2] === symbol){
+  if (board[0][0] === symbol && board[1][1] === symbol && board[2][2] === symbol){
     return true;
   }
 
-  if (game_board[0][2] === symbol && game_board[1][1] === symbol && game_board[2][0] === symbol){
+  if (board[0][2] === symbol && board[1][1] === symbol && board[2][0] === symbol){
     return true;
   }
 
   return false;
 })
 
-const check_draw = (() => {
-  const game_board_array = get_game_board();
-  const flat_board = game_board_array.flat();
-  if (!flat_board.includes('')){ //if the game board does not include any empty string
-    return true;
-  }
-  return false
+const check_draw = ((board) => {
+  const flat_board = board.reduce((acc, row) => acc.concat(row), []);
+  return !flat_board.includes('');
+  //returns true if there are still avaliable spaces left to fill
 })
 
+const get_move = ((player,board) => {
+  let is_valid_move = false;
+  while (!is_valid_move) {
+      let move = prompt(`${player}, enter your move (row, column):`);
+      let [row, column] = move.split(",").map(val => parseInt(val.trim()) - 1); // Adjusting for 0-based indexing
 
-//BoardCell represents a square on the gameboard
-//0 = no value, hence value is default to 0
-//will have to edit the other values as to assinging them to Os or Xs
-const BoardCell = () =>{
-  let value = 0;
-  // accept player's move, and change the cell
-  const add_move = (move) => {
-    value = move;
+      if (row >= 0 && row < 3 && column >= 0 && column < 3 && board[row][column] === "") {
+          return {row,column};
+      } else {
+          console.log("Invalid move. Please try again.");
+      }
   }
-  //getting the current value through function closure!
-  const get_move = () => {return value}
+})
 
-  return add_move, get_move;
-}
+//currently console display is being implemented
+const display_board_controller = ((board) => {
 
-// const game_logic = () => {
-//   const game_board = game_board();
-//   const player1 = "Player 1";
-//   const player2 = "Player 2";
+  function print_board(){
+    console.log("-------------");
+    for (let row of board) {
+        let row_string = "|";
+        for (let cell of row) {
+            if (cell === "") {
+                row_string += "   |";
+            } else {
+                row_string += ` ${cell} |`;
+            }
+        }
+        console.log(row_string);
+        console.log("-------------");
+    }
+  
+  }
 
-//   const players = [ //construction of players object
-//     {
-//       name: player1,
-//       token: 1
-//     },
-//     {
-//       name: player2,
-//       token: 2
-//     }
-//   ];
+  function start_game() {
+    let playerX = create_player("Player 1", "X");
+    let playerO = create_player("Player 2", "O");
+    let current_player = playerX;
+    let game_running = true;
 
-//   //default -> make active player player1 
-//   let active_player = players[0];
+    while (game_running) {
+      print_board();
 
-//   //switching player's turn
-//   // console.log(active_player.name);
-//   const switch_player_turn = () => {
-//     if (active_player.token === 1){
-//       active_player = players[1];
-//     }
-//   };
+      let user_move = get_move(current_player.name,board);
+      let row = user_move.row;
+      let column = user_move.column 
+  
+      if (board[row][column] === ''){
+        board[row][column] = current_player.symbol; // this is being filled, but need to update 
+        print_board()
+  
+        if (check_winner(board, current_player.symbol)) {
+          print_board(board);
+          console.log(`${current_player.name} wins!`);
+          game_running = false;
+        }
 
-//   const get_active_player = () => {
-//     return active_player;
-//   }
+        else if (check_draw(board)) {     
+          console.log("It's a draw!");
+          game_running = false;
+        }
+      }
+  
+      if (current_player === playerX){
+        current_player = playerO;
+      }
+      else{
+        current_player = playerX;
+      }
+    }
+  }
+  return{ 
+    print_board,
+    start_game
+  };
+})(game_board_controller());
 
-//   const new_round = () =>{
-//     //add logic here to print a new round
-//   }
+display_board_controller.start_game();
 
 
-// }
 
-// console.log(game_board());
-// game_logic();
-get_game_board();
-console.log(check_draw())
+
