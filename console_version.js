@@ -98,8 +98,6 @@ const display_board_controller = ((board) => {
     let game_running = true;
 
     while (game_running) {
-      // print_board();
-
       let user_move = game_logic_controller.get_move(current_player.name,board);
       let row = user_move.row;
       let column = user_move.column 

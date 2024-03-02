@@ -1,0 +1,25 @@
+.grid_container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto; 
+    width: 500px;
+    height: 500px;
+    /* gap: 5px;  */
+    /* background-color: #f0f0f0;  */
+    /* padding: 10px; */
+}
+
+.grid_row {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    /* grid-template-rows: repeat(3,1fr); */
+}
+/* Define styles for the grid cells */
+.grid_cell {
+    display:flex;
+    background-color: #ffffff; /* Set background color of the cells */
+    border: 1px solid #cccccc; /* Add border to the cells */
+    justify-content: center;
+    align-items: center;
+    font-size: 24px; /* Adjust font size as needed */
+}
