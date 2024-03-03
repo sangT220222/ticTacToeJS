@@ -74,65 +74,50 @@ const game_board_controller = (() => {
   //currently console display is being implemented
   const display_board_controller = ((board) => {
   
-    function print_board(){
-
+    function print_board(playerX,playerO){
         const grid_container = document.querySelector(".grid_container");
         grid_container.innerHTML = '';
+        let current_player = playerX;
 
-        board.forEach(row => {
+        board.forEach((row, row_index) => {
             const row_element = document.createElement("div");
             row_element.classList.add("grid_row");
 
-            row.forEach(cell => {
-                const cell_element = document.createElement("div");
+            row.forEach((cell, cell_index)  => {
+                const cell_element = document.createElement("button");
                 cell_element.classList.add("grid_cell");
                 cell_element.textContent = cell; // Set the content of the cell if needed
 
+                cell_element.addEventListener("click", () =>{
+                    if (cell === ''){
+                        cell_element.textContent = current_player.symbol;
+                        board[row_index][cell_index] = current_player.symbol; 
 
+                        if (game_logic_controller.check_winner(board, current_player.symbol)) {
+                            print_board(board);
+                            console.log(`${current_player.name} wins!`);
+                            game_running = false;
+                        }
+                
+                        else if (game_logic_controller.check_draw(board)) {     
+                            console.log("It's a draw!");
+                            game_running = false;
+                        }
+                        current_player = current_player === playerX ? playerO: playerX; 
+                    }
+                });                
                 row_element.appendChild(cell_element);
             })
-
-            grid_container.appendChild(row_element); //ok
+            grid_container.appendChild(row_element); 
         });
     }
   
     function start_game() {
       let playerX = game_logic_controller.create_player("Player 1", "X");
       let playerO = game_logic_controller.create_player("Player 2", "O");
-      let current_player = playerX;
-      let game_running = true;
-  
-      while (game_running) {
-        // print_board();
-  
-        let user_move = game_logic_controller.get_move(current_player.name,board);
-        let row = user_move.row;
-        let column = user_move.column 
-    
-        if (board[row][column] === ''){
-          board[row][column] = current_player.symbol; // this is being filled, but need to update 
-          print_board()
-    
-          if (game_logic_controller.check_winner(board, current_player.symbol)) {
-            print_board(board);
-            console.log(`${current_player.name} wins!`);
-            game_running = false;
-          }
-  
-          else if (game_logic_controller.check_draw(board)) {     
-            console.log("It's a draw!");
-            game_running = false;
-          }
-        }
-    
-        if (current_player === playerX){
-          current_player = playerO;
-        }
-        else{
-          current_player = playerX;
-        }
-      }
+      print_board(playerX,playerO);
     }
+  
     return{ 
       print_board,
       start_game
@@ -141,7 +126,7 @@ const game_board_controller = (() => {
   
 //   display_board_controller.start_game();
   
-display_board_controller.print_board();
+display_board_controller.start_game();
   
   
   
