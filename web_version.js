@@ -48,62 +48,69 @@ const game_board_controller = (() => {
       //returns true if there are still avaliable spaces left to fill
     })
     
-    const get_move = ((player,board) => {
-      let is_valid_move = false;
-      while (!is_valid_move) {
-          let move = prompt(`${player}, enter your move (row, column):`);
-          let [row, column] = move.split(",").map(val => parseInt(val.trim()) - 1); // Adjusting for 0-based indexing
-    
-          if (row >= 0 && row < 3 && column >= 0 && column < 3 && board[row][column] === "") {
-              return {row,column};
-          } else {
-              console.log("Invalid move. Please try again.");
-          }
-      }
+    const check_move = ((player,board,row,column) => {
+        if (row >= 0 && row < 3 && column >= 0 && column < 3 && board[row][column] === "") {
+            return true;
+        } else {
+            return false;
+        }
     })
   
     return{
       create_player,
       check_winner,
       check_draw,
-      get_move
+      check_move
     };
   })();
   
   
   //currently console display is being implemented
   const display_board_controller = ((board) => {
-  
+
+    let game_running = true;
+
     function print_board(playerX,playerO){
+        //selecting specified html tag 
         const grid_container = document.querySelector(".grid_container");
+        //clearing out the content in html tag before rendering the grid_container
         grid_container.innerHTML = '';
         let current_player = playerX;
-
+        //looping through each row in the board array from the game_board_controller function on line 1
         board.forEach((row, row_index) => {
+            //row represents each individual row in the board array, it's the element used to iterate over as the loop goes through each row in the board array
+            //row_index is the current row being iterated over in the array, this is one of the parts used when we assign a "symbol" to a specific cell -line 101
             const row_element = document.createElement("div");
-            row_element.classList.add("grid_row");
+            row_element.classList.add("grid_row");// adding to the html class list
 
+            //looping through each cell in the current row (as our array is 3x3, so this is a loop of 3 times)
             row.forEach((cell, cell_index)  => {
+                //cell is each celel within the current row being iterated over
+                //cell_index is the index of current cell being iterated over, this is one of the parts used when we assign a "symbol" to a specific cell - line 101
                 const cell_element = document.createElement("button");
                 cell_element.classList.add("grid_cell");
                 cell_element.textContent = cell; // Set the content of the cell if needed
-
+                //event listener when the a cell is clicked
                 cell_element.addEventListener("click", () =>{
-                    if (cell === ''){
-                        cell_element.textContent = current_player.symbol;
-                        board[row_index][cell_index] = current_player.symbol; 
-
-                        if (game_logic_controller.check_winner(board, current_player.symbol)) {
-                            print_board(board);
-                            console.log(`${current_player.name} wins!`);
-                            game_running = false;
+                    if (!game_running) return; //exits the function if game_running = false
+                    //checks if cell's empty
+                    if(!game_logic_controller.check_move(current_player.name,board,row_index,cell_index)) {
+                        console.log("Invalid move. Please try again."); //will change this to be an HTML output instead of console
+                    }
+                    else {
+                        cell_element.textContent = current_player.symbol; //updates the cell content to the appropriate symbol
+                        board[row_index][cell_index] = current_player.symbol; //updates the board accordinglty
+                        //checking if game is won or not
+                        if (game_logic_controller.check_winner(board, current_player.symbol)) {                        
+                            console.log(`${current_player.name} wins!`); //UPDATE THIS TO DISPLAY ON HTML
+                            game_running = false; //changing control flow flag
                         }
                 
                         else if (game_logic_controller.check_draw(board)) {     
-                            console.log("It's a draw!");
-                            game_running = false;
+                            console.log("It's a draw!");//UPDATE THIS TO DISPLAY ON HTML
+                            game_running = false; //changing control flow flag
                         }
-                        current_player = current_player === playerX ? playerO: playerX; 
+                        current_player = current_player === playerX ? playerO: playerX; //switching player once a cell is clicked
                     }
                 });                
                 row_element.appendChild(cell_element);
