@@ -101,13 +101,15 @@ const game_board_controller = (() => {
                         cell_element.textContent = current_player.symbol; //updates the cell content to the appropriate symbol
                         board[row_index][cell_index] = current_player.symbol; //updates the board accordinglty
                         //checking if game is won or not
-                        if (game_logic_controller.check_winner(board, current_player.symbol)) {                        
-                            console.log(`${current_player.name} wins!`); //UPDATE THIS TO DISPLAY ON HTML
+                        if (game_logic_controller.check_winner(board, current_player.symbol)) {          
+                            alert(`${current_player.name} wins!`);              
+                            // console.log(`${current_player.name} wins!`); 
                             game_running = false; //changing control flow flag
                         }
                 
                         else if (game_logic_controller.check_draw(board)) {     
-                            console.log("It's a draw!");//UPDATE THIS TO DISPLAY ON HTML
+                            // console.log("It's a draw!");
+                            alert("It's a draw");
                             game_running = false; //changing control flow flag
                         }
                         current_player = current_player === playerX ? playerO: playerX; //switching player once a cell is clicked
